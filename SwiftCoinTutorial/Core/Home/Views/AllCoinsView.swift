@@ -30,6 +30,11 @@ struct AllCoinsView: View {
                 VStack {
                     ForEach(viewModel.coins) { coin in
                         CoinRowView(coin: coin)
+                            .onAppear{
+                                if coin.id == viewModel.coins.last?.id {
+                                    viewModel.loadData()
+                                }
+                            }
                     }
                 }
             }

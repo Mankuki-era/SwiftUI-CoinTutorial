@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var viewModel = HomeViewModel()
+    @StateObject private var viewModel = HomeViewModel()
+    @State private var showAlert = false
     
     var body: some View {
         NavigationStack {
@@ -21,6 +22,20 @@ struct HomeView: View {
                 // all coins view
                 AllCoinsView(viewModel: viewModel)
             }
+            .refreshable {
+                viewModel.handleRefresh()
+            }
+            .onReceive(viewModel.$error, perform: { error in
+                if error != nil {
+                    showAlert.toggle()
+                }
+            })
+            .alert(isPresented: $showAlert, content: {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(viewModel.error?.localizedDescription ?? "")
+                )
+            })
             .navigationTitle("Live Prices")
         }
     }
